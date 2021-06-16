@@ -1,6 +1,49 @@
-var myNinjaApp = angular.module('myNinjaApp',[]);
+var myNinjaApp = angular.module('myNinjaApp',['ngRoute', 'ngAnimate']);
 
-myNinjaApp.controller('NinjaController', ['$scope', function($scope){
+myNinjaApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider){
+
+    $locationProvider.html5Mode(true);
+
+    $routeProvider
+    .when('/home', {
+        templateUrl: 'views/home.html',
+        controller: 'NinjaController'
+    })
+    .when('/contact', {
+        templateUrl: 'views/contact.html',
+        controller: 'ContactController'
+    })
+    .when('/contact-success', {
+        templateUrl: 'views/contact-success.html',
+        controller: 'ContactController'
+    })
+    .when('/directory', {
+        templateUrl: 'views/directory.html',
+        controller: 'NinjaController'
+    }).otherwise({
+        redirectTo: '/home'
+    });
+}]);
+
+myNinjaApp.directive('randomNinja', [function(){
+
+    return { 
+        restrict: 'E',
+        scope: {
+            ninjas: '=',
+            title: '='
+        },
+        templateUrl: 'views/random.html',
+        transclude: true,
+        replace: true,
+        controller: function($scope){
+            $scope.random = Math.floor(Math.random() * 4);
+        }
+    };
+
+}]);
+
+myNinjaApp.controller('NinjaController', ['$scope', '$http', function($scope, $http){
 
     $scope.removeNinja = function(ninja){
         var removeNinja = $scope.ninjas.indexOf(ninja);
@@ -18,14 +61,21 @@ myNinjaApp.controller('NinjaController', ['$scope', function($scope){
         $scope.newninja.name = "";
         $scope.newninja.belt = "";
         $scope.newninja.rate = "";
+    };
 
+    $http.get('data/ninjas.json').then(function(response){
+        $scope.ninjas = response.data;
+    });
+
+    $scope.removeAll = function(){
+        $scope.ninjas = [];
     }
-
-    $scope.ninjas = [
-        {name: 'Yoshi', rate: 50.12, belt: 'Green', available: true},
-        {name: 'Crystal', rate: 30, belt: 'Yellow', available: true},
-        {name: 'Ryu', rate: 500, belt: 'Black', available: false},
-        {name: 'Shaum', rate: 1000, belt: 'Black', available: true}
-    ]
-
 }]);
+
+myNinjaApp.controller('ContactController', ['$scope', '$location', function($scope, $location){
+
+    $scope.sendMessage = function(){
+        $location.path('/contact-success');
+    };
+
+}])
