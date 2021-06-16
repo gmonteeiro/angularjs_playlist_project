@@ -1,10 +1,37 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-app='myNinjaApp'>
   <head>
     <title>TheNetNinja Angular Playlist</title>
     <link href="content/css/styles.css" rel="stylesheet" type="text/css" />
+    <script src="app/lib/angular.min.js"></script>
+    <script src="app/app.js"></script>
   </head>
-  <body>
 
+  <body>
+    <header ng-include="'header.html'"></header>
+    
+    <div class="content">
+      <div ng-controller='NinjaController'>
+        <button ng-click="order = 'name'">Order by Name</button>
+        <button ng-click="order = 'Belt'">Order by Belt</button>
+        <input type="text" ng-model="search" placeholder="Search for a ninja" />
+        
+        <ul>
+          <li ng-repeat="ninja in ninjas | orderBy: order | filter: search" ng-show="ninja.available" > 
+            <h3>{{ninja.name}} - {{ninja.rate | currency: 'R$ '}}</h3>
+            <div class="remove" ng-click="removeNinja(ninja)">x</div>
+            <span class="belt" style="background: {{ninja.belt}}"> {{ninja.belt}} belt </span>
+          </li>
+        </ul>
+
+        <form ng-submit="addNinja()">
+          <input type="text" placeholder="Name" ng-model="newninja.name" />
+          <input type="text" placeholder="Belt" ng-model="newninja.belt" />
+          <input type="text" placeholder="Rate" ng-model="newninja.rate" />
+          <input type="submit" value="Add new ninja" />
+        </form>
+      </div>
+    </div>
+    
   </body>
 </html>
